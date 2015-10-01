@@ -36,7 +36,7 @@ class LaravelSalesforceServiceProvider extends ServiceProvider
         });
 
         $this->app['salesforce'] = $this->app->share(function ($app) {
-            return new Salesforce($app['config']);
+            return new Salesforce(getenv('salesforce.environment'));
         });
     }
 

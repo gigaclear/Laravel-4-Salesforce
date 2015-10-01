@@ -27,27 +27,19 @@ class Salesforce
      * Authenticates into Salesforce according to
      * the provided credentials and WSDL file
      *
-     * @param Repository $configExternal
+     * @param Environment $environment
      * @throws SalesforceException
      */
-    public function __construct(Repository $configExternal)
+    public function __construct($environment)
     {
         try {
-            $this->sfh = new Client();
+             $this->sfh = new Client();
 
-            $wsdl = $configExternal->get('laravel-salesforce::wsdl');
-
-            if (empty($wsdl)) {
-                $wsdl = __DIR__ . '/Wsdl/enterprise.wsdl.xml';
-            }
+            $wsdl =  getenv('salesforce.'.$environment.'.wsdl');
 
             $this->sfh->createConnection($wsdl);
-
-            $username = $configExternal->get('laravel-salesforce::username');
-            $password = $configExternal->get('laravel-salesforce::password');
-            $token = $configExternal->get('laravel-salesforce::token');
-
-            $this->sfh->login($username, $password . $token);
+                
+            $this->sfh->login( getenv('salesforce.'.$environment.'.username'),  getenv('salesforce.'.$environment.'.password') .  getenv('salesforce.'.$environment.'.token'));
             
         } catch (Exception $e) {
             throw new SalesforceException('Exception at Constructor' . $e->getMessage() . "\n\n" . $e->getTraceAsString());
